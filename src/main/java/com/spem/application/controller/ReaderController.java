@@ -80,7 +80,7 @@ public class ReaderController {
             return response;
         } else if (lReaderService.isExcel(file)) {
             System.out.println("file   " + file.getContentType());
-            List<Reader> red = lReaderService.readExcel(file.getInputStream());
+            List<Reader> red = lReaderService.readExcelNew(file.getInputStream());
             if (red.isEmpty()) {
                 response.setMessage("No data found");
                 return response;
@@ -94,6 +94,11 @@ public class ReaderController {
         }
         response.setMessage("Upload the correct format, please upload the correct file format");
         return response;
+    }
+
+    @GetMapping("/teams/new")
+    public List<Reader> formTeamNew(){
+        return teamCreationService.createTeamNew();
     }
 
     @GetMapping("/teams")

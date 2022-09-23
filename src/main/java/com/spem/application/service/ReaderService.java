@@ -19,4 +19,5 @@ public interface ReaderService {
 	
 	public List<Reader> readCSV(InputStream inputStream);
 
+	public List<Reader> getExistingStudentsNew();
 }

@@ -31,11 +31,12 @@ public class ReaderServiceImpl implements ReaderService {
     public String fileTypeXlxs = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     private static List<Reader> teamDetails = new ArrayList<>();
+    private static List<Reader> teamDetails2 = new ArrayList<>();
 
     @Override
     public List<Reader> readExcelNew(InputStream inputStream){
         try {
-            teamDetails.clear();
+            teamDetails2.clear();
             Workbook wb = new XSSFWorkbook(inputStream);
             Sheet s = wb.getSheet("Sheet1");
             Iterator<Row> row = s.iterator();
@@ -161,6 +162,10 @@ public class ReaderServiceImpl implements ReaderService {
 
                             reader.setPreferredTimes(listPreferredTime);
                             break;
+                        case 14:
+                            String groupId = formatter.formatCellValue(value);
+                            reader.setGroupId(Integer.parseInt(groupId));
+                            break;
 
                         default:
                             break;
@@ -168,10 +173,10 @@ public class ReaderServiceImpl implements ReaderService {
                     }
                     cellNumber++;
                 }
-                teamDetails.add(reader);
+                teamDetails2.add(reader);
             }
             wb.close();
-            return teamDetails;
+            return teamDetails2;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -432,4 +437,8 @@ public class ReaderServiceImpl implements ReaderService {
 	public List<Reader> getExistingStudents() {
         return teamDetails;
 	}
+
+    public List<Reader> getExistingStudentsNew() {
+        return teamDetails2;
+    }
 }
