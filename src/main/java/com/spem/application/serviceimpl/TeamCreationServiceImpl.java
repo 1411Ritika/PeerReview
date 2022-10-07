@@ -2,14 +2,13 @@ package com.spem.application.serviceimpl;
 
 import com.spem.application.pojo.ProjectOption;
 import com.spem.application.pojo.Reader;
-import com.spem.application.pojo.StudentNumber;
 import com.spem.application.pojo.Technology;
 import com.spem.application.service.TeamCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,7 +51,7 @@ public class TeamCreationServiceImpl implements TeamCreationService {
             }
         });
         
-        
+//        Reading the number of people in a group
         for(Reader s:studentsList) {
         	if(s.getGroupId() != null) {
         		Integer number = s.getGroupId();
@@ -211,10 +210,26 @@ public class TeamCreationServiceImpl implements TeamCreationService {
         List<Reader> studentWithNoGroupsAdded = getStudentsAddingMembersToListWithProjectOption(studentsList, studentsListWithGroupAfterTechnology, NumberOfMembersCanBeAdded);
         
         List<Reader> read = removeOwnStudentId(studentsList);
-        
+		List<Reader> newTeamValue = new ArrayList<>();
+		Map<Integer, List<Reader>> uniqueGroups = read.stream().filter(x -> x.getGroupId()!=null).collect(Collectors.groupingBy(Reader::getGroupId));
+		AtomicReference<Integer> count = new AtomicReference<>(1);
+		uniqueGroups.forEach((groupId, students) ->{
+			List<Reader> result = students.stream().map(s -> {
+				s.setGroupId(count.get());
+				return s;
+			}).collect(Collectors.toList());
+			count.getAndSet(count.get() + 1);
+			System.out.println(result);
+			newTeamValue.addAll(result);
+		});
        
-        return read;
+        return newTeamValue;
     }
+
+	@Override
+	public List<Reader> createTeamNew(){
+		return this.getStudentListNew();
+	}
 
     private Set<List<String>> groupSameTeamMembers(List<Reader> studentsInWorkshop) {
         return
@@ -240,6 +255,10 @@ public class TeamCreationServiceImpl implements TeamCreationService {
     private List<Reader> getStudentList(){
         return readerServiceImpl.getExistingStudents();
     }
+
+	private List<Reader> getStudentListNew(){
+		return readerServiceImpl.getExistingStudentsNew();
+	}
     
     private List<Reader> getStudentsListWithOutGroup(List<Reader> studentsList, Map<Integer, Integer> groupNumber){
     	List<Reader> studentsListWithoutGroup = new ArrayList<>();

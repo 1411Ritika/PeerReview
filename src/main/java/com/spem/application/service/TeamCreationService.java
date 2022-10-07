@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface TeamCreationService {
     public List<Reader> createTeam();
+
+    public List<Reader> createTeamNew();
 }
